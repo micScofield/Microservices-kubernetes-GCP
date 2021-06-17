@@ -16,7 +16,7 @@ app.use(json())
 
 app.use(cookieSession({
     signed: false, //no encryption on cookie
-    secure: process.env.NODE_ENV !== 'test' //send over https connection only...
+    secure: process.env.NODE_ENV !== 'test' //send over https connection only
 }))
 
 // User Routes
