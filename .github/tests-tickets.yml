@@ -1,0 +1,15 @@
+name: tests-tickets
+
+on:
+  pull_request: # on open, sync, re-open a PR AND files inside tickets/** has changed then only run this suite
+    paths:
+      - 'tickets/**'
+  
+jobs:
+  build:
+    runs-on: ubuntu-latest #specify machine
+    steps:
+      - uses: actions/checkout@v2 #take code out of our project
+      - run: cd tickets && npm install && npm run test:ci #run tests for tickets service "add a CI script inside package.json so that it runs only once and doesnt watch for changes"
+      
+    

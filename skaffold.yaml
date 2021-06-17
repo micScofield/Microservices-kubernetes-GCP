@@ -1,0 +1,67 @@
+apiVersion: skaffold/v2alpha3
+kind: Config
+deploy:
+  kubectl:
+    manifests:
+      - ./infra/k8s/*
+      - ./infra/k8s-dev/*
+build:
+  # local:
+  #   push: false
+  googleCloudBuild:
+    projectId: ticketing-317118
+  artifacts:
+    - image: asia.gcr.io/ticketing-317118/auth #hosts image in asia gcloud repo
+      context: auth
+      docker: 
+        dockerfile: Dockerfile
+      sync:
+        manual:
+          #- src: 'src/**/*.ts' #watch all .ts files from src directory
+          - src: '***/.ts'
+            dest: . #where to sync inside running container
+    - image: asia.gcr.io/ticketing-317118/tickets
+      context: tickets
+      docker: 
+        dockerfile: Dockerfile
+      sync:
+        manual:
+          #- src: 'src/**/*.ts' 
+          - src: '***/.ts'
+            dest: .
+    - image: asia.gcr.io/ticketing-317118/orders
+      context: orders
+      docker: 
+        dockerfile: Dockerfile
+      sync:
+        manual:
+          #- src: 'src/**/*.ts' 
+          - src: '***/.ts'
+            dest: .
+    - image: asia.gcr.io/ticketing-317118/expiration
+      context: expiration
+      docker: 
+        dockerfile: Dockerfile
+      sync:
+        manual:
+          #- src: 'src/**/*.ts' 
+          - src: '***/.ts'
+            dest: .
+    - image: asia.gcr.io/ticketing-317118/payments
+      context: payments
+      docker: 
+        dockerfile: Dockerfile
+      sync:
+        manual:
+          #- src: 'src/**/*.ts' 
+          - src: '***/.ts'
+            dest: .
+    - image: asia.gcr.io/ticketing-317118/client
+      context: client
+      docker: 
+        dockerfile: Dockerfile
+      sync:
+        manual:
+          #- src: '**/*.js' #watch all .js files from client directory
+          - src: '***/.js'
+            dest: . #where to sync inside running container

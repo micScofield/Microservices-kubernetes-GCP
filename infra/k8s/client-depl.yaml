@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: client-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: client
+  template:
+    metadata:
+      labels:
+        app: client
+    spec:
+      containers: 
+        - name: client #this name can be anything and we will use this for logging purposes lets say
+          image: asia.gcr.io/ticketing-317118/client
+---
+apiVersion: v1
+kind: Service
+metadata: 
+  name: client-srv
+spec:
+  selector:
+    app: client #specify which selector to match with. Write same name as above inside template
+  ports:
+    - name: client #this name is not important
+      protocol: TCP
+      port: 3000 #next app by default listens on 3000
+      targetPort: 3000

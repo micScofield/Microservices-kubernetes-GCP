@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: expirations-redis-depl
+spec:
+  replicas: 1
+  selector: #tell which pods to get access to
+    matchLabels:
+      app: expirations-redis
+  template:
+    metadata:
+      labels:
+        app: expirations-redis
+    spec:
+      containers:
+        - name: expirations-redis
+          image: redis #standard image present in docker hub
+          # image: asia.gcr.io/ticketing-dev-315817/redis DONT USE THIS
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: expirations-redis-srv
+spec:
+  selector: #tell which pods to get access to
+    app: expirations-redis
+  ports:
+    - name: db
+      protocol: TCP
+      port: 6379
+      targetPort: 6379

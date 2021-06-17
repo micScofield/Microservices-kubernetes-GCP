@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: expiration-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: expiration
+  #specify how to create pods, match selector name with below
+  template:
+    metadata:
+      labels:
+        app: expiration
+    spec:
+      containers: 
+        - name: expiration #this name can be anything and we will use this for logging purposes lets say
+          image: asia.gcr.io/ticketing-317118/expiration
+          env:
+            - name: NATS_CLUSTER_ID
+              value: ticketing
+            - name: NATS_URL
+              value: 'http://nats-srv:4222'
+            - name: NATS_CLIENT_ID
+              valueFrom: #needs to be different for each clients so cant set a raw string
+                fieldRef:
+                  fieldPath: metadata.name 
+                  #we are extracting this pod's name here and setting the same to client id as well. This is a better practice and will help when we debug issues when having multiple copies of ticket services  
+            - name: REDIS_HOST
+              value: expiration-redis-srv #service name of redis deployment (fetched from exp-redis-depl.yaml file)

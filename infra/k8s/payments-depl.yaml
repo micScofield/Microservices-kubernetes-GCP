@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: payments-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: payments
+  #specify how to create pods, match selector name with below
+  template:
+    metadata:
+      labels:
+        app: payments
+    spec:
+      containers: 
+        - name: payments #this name can be anything and we will use this for logging purposes lets say
+          image: asia.gcr.io/ticketing-317118/payments
+          env:
+            - name: MONGO_URI
+              value: 'mongodb://payments-mongo-srv:27017/payments'
+            - name: JWT_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: jwt-secret
+                  key: JWT_KEY
+            - name: STRIPE_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: stripe-secret
+                  key: STRIPE_KEY
+            - name: NATS_CLUSTER_ID
+              value: ticketing
+            - name: NATS_URL
+              value: 'http://nats-srv:4222'
+            - name: NATS_CLIENT_ID
+              valueFrom: #needs to be different for each clients so cant set a raw string
+                fieldRef:
+                  fieldPath: metadata.name 
+                  #we are extracting this pod's name here and setting the same to client id as well. This is a better practice and will help when we debug issues when having multiple copies of ticket services  
+---
+apiVersion: v1
+kind: Service
+metadata: 
+  name: payments-srv
+spec:
+  selector:
+    app: payments #specify which selector to match with. Write same name as above
+  ports:
+    - name: payments
+      protocol: TCP
+      port: 3000
+      targetPort: 3000
